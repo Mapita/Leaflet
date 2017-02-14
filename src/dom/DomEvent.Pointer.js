@@ -29,7 +29,7 @@ export function addPointerListener(obj, type, handler, id) {
 	} else if (type === 'touchmove') {
 		_addPointerMove(obj, handler, id);
 
-	} else if (type === 'touchend') {
+	} else if (type === 'touchend' || type === 'touchleave' || type === 'touchcancel') {
 		_addPointerEnd(obj, handler, id);
 	}
 

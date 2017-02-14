@@ -312,7 +312,9 @@ export var Layers = Control.extend({
 		    checked = this._map.hasLayer(obj.layer),
 		    input;
 
-		if (obj.overlay) {
+		if (obj.overlay && obj.mutex) {
+			input = this._createRadioElement("leaflet-mutex-overlays", checked);
+		} else if (obj.overlay) {
 			input = document.createElement('input');
 			input.type = 'checkbox';
 			input.className = 'leaflet-control-layers-selector';
@@ -344,7 +346,7 @@ export var Layers = Control.extend({
 	},
 
 	_onInputClick: function () {
-		var inputs = this._form.getElementsByTagName('input'),
+	 	var inputs = this._form.querySelectorAll(".leaflet-control-layers-selector"), //this._form.querySelectorAll(".leaflet-control-layers-selector"), //_form.getElementsByTagName('input'),
 		    input, layer, hasLayer;
 		var addedLayers = [],
 		    removedLayers = [];
@@ -377,8 +379,27 @@ export var Layers = Control.extend({
 		this._refocusOnMap();
 	},
 
+	addMutexOverlay: function(layer, name) {
+		return this._addMutexLayer(layer, name, true), this._update();
+	},
+	
+	_addMutexLayer: function(layer, name, overlay) {
+		layer.on("add remove", this._onLayerChange, this);
+		var n = o.stamp(t);
+		this._layers[n] = {
+			layer: layer,
+			name: name,
+			mutex: true,
+			overlay: overlay
+		}; 
+		if (this.options.autoZIndex && layer.setZIndex) {
+			this._lastZIndex++;
+			layer.setZIndex(this._lastZIndex);
+		}
+	},
+
 	_checkDisabledLayers: function () {
-		var inputs = this._form.getElementsByTagName('input'),
+		var inputs = this._form.querySelectorAll(".leaflet-control-layers-selector"), //_form.getElementsByTagName('input'),
 		    input,
 		    layer,
 		    zoom = this._map.getZoom();
