@@ -125,6 +125,12 @@ export var Layers = Control.extend({
 		return (this._map) ? this._update() : this;
 	},
 
+	// @method addMutexOverlay(layer: Layer, name: String): this
+	// Adds a mutually exclusive overlay (radio entry) with the given name to the control.
+	addMutexOverlay: function(layer, name) {
+		return this._addMutexLayer(layer, name, true, true), this._update();
+	},
+
 	// @method removeLayer(layer: Layer): this
 	// Remove the given layer from the control.
 	removeLayer: function (layer) {
@@ -222,13 +228,14 @@ export var Layers = Control.extend({
 		}
 	},
 
-	_addLayer: function (layer, name, overlay) {
+	_addLayer: function (layer, name, overlay, mutex) {
 		layer.on('add remove', this._onLayerChange, this);
 
 		this._layers.push({
 			layer: layer,
 			name: name,
-			overlay: overlay
+			overlay: overlay,
+			mutex: mutex
 		});
 
 		if (this.options.sortLayers) {
@@ -346,7 +353,7 @@ export var Layers = Control.extend({
 	},
 
 	_onInputClick: function () {
-	 	var inputs = this._form.querySelectorAll(".leaflet-control-layers-selector"), //this._form.querySelectorAll(".leaflet-control-layers-selector"), //_form.getElementsByTagName('input'),
+	 	var inputs = this._form.getElementsByTagName('input'),
 		    input, layer, hasLayer;
 		var addedLayers = [],
 		    removedLayers = [];
@@ -379,27 +386,8 @@ export var Layers = Control.extend({
 		this._refocusOnMap();
 	},
 
-	addMutexOverlay: function(layer, name) {
-		return this._addMutexLayer(layer, name, true), this._update();
-	},
-	
-	_addMutexLayer: function(layer, name, overlay) {
-		layer.on("add remove", this._onLayerChange, this);
-		var n = o.stamp(t);
-		this._layers[n] = {
-			layer: layer,
-			name: name,
-			mutex: true,
-			overlay: overlay
-		}; 
-		if (this.options.autoZIndex && layer.setZIndex) {
-			this._lastZIndex++;
-			layer.setZIndex(this._lastZIndex);
-		}
-	},
-
 	_checkDisabledLayers: function () {
-		var inputs = this._form.querySelectorAll(".leaflet-control-layers-selector"), //_form.getElementsByTagName('input'),
+		var inputs = this._form.getElementsByTagName('input'),
 		    input,
 		    layer,
 		    zoom = this._map.getZoom();
