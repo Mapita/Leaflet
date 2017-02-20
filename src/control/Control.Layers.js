@@ -127,8 +127,9 @@ export var Layers = Control.extend({
 
 	// @method addMutexOverlay(layer: Layer, name: String): this
 	// Adds a mutually exclusive overlay (radio entry) with the given name to the control.
-	addMutexOverlay: function(layer, name) {
-		return this._addMutexLayer(layer, name, true, true), this._update();
+	addMutexOverlay: function (layer, name) {
+		this._addMutexLayer(layer, name, true, true);
+		return (this._map) ? this._update() : this;
 	},
 
 	// @method removeLayer(layer: Layer): this
@@ -320,7 +321,7 @@ export var Layers = Control.extend({
 		    input;
 
 		if (obj.overlay && obj.mutex) {
-			input = this._createRadioElement("leaflet-mutex-overlays", checked);
+			input = this._createRadioElement('leaflet-mutex-overlays', checked);
 		} else if (obj.overlay) {
 			input = document.createElement('input');
 			input.type = 'checkbox';
@@ -353,8 +354,8 @@ export var Layers = Control.extend({
 	},
 
 	_onInputClick: function () {
-	 	var inputs = this._form.getElementsByTagName('input'),
-		    input, layer, hasLayer;
+		var inputs = this._form.getElementsByTagName('input');
+		var input, layer, hasLayer;
 		var addedLayers = [],
 		    removedLayers = [];
 
