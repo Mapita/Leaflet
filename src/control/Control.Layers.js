@@ -128,7 +128,7 @@ export var Layers = Control.extend({
 	// @method addMutexOverlay(layer: Layer, name: String): this
 	// Adds a mutually exclusive overlay (radio entry) with the given name to the control.
 	addMutexOverlay: function (layer, name) {
-		this._addMutexLayer(layer, name, true, true);
+		this._addLayer(layer, name, true, true);
 		return (this._map) ? this._update() : this;
 	},
 
